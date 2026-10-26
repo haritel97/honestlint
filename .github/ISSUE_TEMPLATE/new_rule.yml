@@ -1,0 +1,41 @@
+name: New rule proposal
+description: Suggest a dark pattern honestlint should detect
+labels: ["new rule"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Pattern name
+      placeholder: "roach-motel"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What is the pattern?
+      description: Describe it from the user's point of view, with a real-world example if you have one.
+    validations:
+      required: true
+  - type: textarea
+    id: detection
+    attributes:
+      label: How could it be detected?
+      description: What would honestlint look for in the page (DOM, text, behaviour across reloads, etc.)?
+    validations:
+      required: true
+  - type: textarea
+    id: honest
+    attributes:
+      label: What does the honest version look like?
+      description: This helps us avoid false positives.
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Research paper, regulator guidance, or deceptive.design page describing the pattern.
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I'd like to implement this rule myself

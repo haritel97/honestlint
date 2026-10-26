@@ -12,7 +12,7 @@
     }
   },
   "bin": {
-    "honestlint": "./dist/cli.js"
+    "honestlint": "dist/cli.js"
   },
   "files": [
     "dist"
@@ -35,6 +35,15 @@
     "ci"
   ],
   "license": "MIT",
+  "author": "haritel97 (https://github.com/haritel97)",
+  "homepage": "https://github.com/haritel97/honestlint#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haritel97/honestlint.git"
+  },
+  "bugs": {
+    "url": "https://github.com/haritel97/honestlint/issues"
+  },
   "engines": {
     "node": ">=20"
   },

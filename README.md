@@ -1,5 +1,10 @@
 # honestlint
 
+[![CI](https://github.com/haritel97/honestlint/actions/workflows/ci.yml/badge.svg)](https://github.com/haritel97/honestlint/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/honestlint)](https://www.npmjs.com/package/honestlint)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 **A linter for deceptive UX.** honestlint opens your web app in a real browser and flags dark patterns (pre-ticked consent boxes, fake countdown timers, lopsided cookie banners, guilt-trip opt-outs) so you can fix them before your users, or a regulator, notice.
 
 Think ESLint, but for the honesty of your interface.
@@ -90,7 +95,9 @@ console.log(formatPretty(results));
 
 ## Contributing
 
-Each dark pattern is one small rule file, so adding a new one is a great first contribution. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Each dark pattern is one small rule file, so adding a new one is a great first contribution. See [CONTRIBUTING.md](CONTRIBUTING.md), and look for issues labelled [`good first issue`](https://github.com/haritel97/honestlint/labels/good%20first%20issue).
+
+Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
