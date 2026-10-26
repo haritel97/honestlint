@@ -35,7 +35,7 @@ Report written to honestlint-report.html
 
 ShadyShop also hides a few patterns honestlint can't catch yet (fake scarcity, a pre-added protection plan, a "cancel by phone" subscription). Spotting them is a good first contribution.
 
-> **Status:** early (v0.2). Rules are heuristic, so expect some false positives and misses. Feedback and new rules are very welcome.
+> **Status:** early (v0.3), [tested on 30 real websites](#tested-on-real-websites). Rules are heuristic, so expect some false positives and misses. Feedback and new rules are very welcome.
 
 ## Why
 
@@ -109,6 +109,24 @@ console.log(formatPretty(results));
 - Timers are watched for a moment to confirm they are counting down, then the page is opened again in a fresh tab. A timer that jumps back up is fake, even if it only persists per session. Times inside video and audio players, and times with no sales wording nearby ("ends", "offer", "tamat", "endet"…), are ignored.
 - Cookie banners are recognised in English, German, French, Spanish, Italian, Dutch, Portuguese and Malay.
 - Many large sites serve automated browsers a block page or CAPTCHA. honestlint reports these pages as **could not lint** rather than "clean", and does not try to get around bot protection. It works best on your own site: run it against a local, preview or staging build.
+
+## Tested on real websites
+
+Before v0.3.0 we ran honestlint against **30 popular websites** (online stores, news sites and travel sites in the US, Europe and Southeast Asia). The fixture pages were passing, but the real world was not. Here is what that run taught us, and what changed:
+
+| What we found | What we changed |
+| --- | --- |
+| 5 of the 30 sites showed the headless browser a block page or CAPTCHA, and honestlint reported them as **clean** | Block pages are now detected and reported as *could not lint*. A clean result should mean we actually looked |
+| A news site's video player produced **18 false "fake countdown" errors**: its remaining time restarts on every visit, like a fake timer would | Timers inside media players, or with no sales wording nearby, are ignored |
+| Consent banners on two major news sites were missed: one was in French ("Accepter et continuer"), the other said "Yes, I accept" | Cookie banners are recognised in 8 languages and more phrasings, and only buttons inside a consent notice count |
+| One site timed out. In v0.2, a single failing page aborted the whole run and lost every other result | Each page now succeeds or fails on its own (fixed just before the run, which confirmed it) |
+| Ad-heavy pages timed out waiting for the `load` event | Only the HTML has to arrive in time; later waits are capped |
+
+Things to keep in mind:
+
+- **30 sites is a small sample.** It found real bugs, but it is not proof that every rule is accurate everywhere. Please [report false positives](https://github.com/haritel97/honestlint/issues/new?template=false_positive.yml).
+- The run was made from Malaysia. Many European sites only show their cookie banner to visitors in the EU, so it says little about how those banners look to European users.
+- We publish what we changed, not a list of sites and their results: honestlint is a heuristic tool, and a heuristic result is not an accusation.
 
 ## Roadmap
 
