@@ -31,7 +31,11 @@ function renderMarkers(result: LintResult, offset: number): string {
         `width:${pct(Math.max(box.width, 8), shot.width)}`,
         `height:${pct(Math.max(box.height, 8), shot.height)}`,
       ].join(";");
-      return `<a class="marker ${f.severity}" href="#f${n}" data-n="${n}" style="${style}" aria-label="Finding ${n}"><span>${n}</span></a>`;
+      // The number badge sits just outside the box's top-left corner, where it
+      // rarely hides the flagged element or its neighbours. It flips to the other
+      // side when it would fall off the image.
+      const edge = (box.x < 24 ? " edge-x" : "") + (box.y < 24 ? " edge-y" : "");
+      return `<a class="marker ${f.severity}${edge}" href="#f${n}" data-n="${n}" style="${style}" aria-label="Finding ${n}"><span>${n}</span></a>`;
     })
     .join("");
 }
@@ -149,9 +153,11 @@ body { margin: 0; background: var(--bg); color: var(--text);
 .marker { position: absolute; border: 2px solid var(--c); border-radius: 4px;
   background: color-mix(in srgb, var(--c) 12%, transparent); transition: box-shadow .15s, background .15s; }
 .marker.error { --c: #e5484d; } .marker.warn { --c: #f5a524; }
-.marker span { position: absolute; top: -11px; left: -11px; width: 22px; height: 22px; border-radius: 50%;
+.marker span { position: absolute; top: -20px; left: -20px; width: 22px; height: 22px; border-radius: 50%;
   background: var(--c); color: #fff; font: 700 12px/22px ui-sans-serif, system-ui, sans-serif; text-align: center;
   box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+.marker.edge-x span { left: auto; right: -20px; }
+.marker.edge-y span { top: auto; bottom: -20px; }
 .marker.active { box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 45%, transparent);
   background: color-mix(in srgb, var(--c) 25%, transparent); }
 .findings { list-style: none; margin: 0; padding: 12px; max-height: 80vh; overflow: auto; }

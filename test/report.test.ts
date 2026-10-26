@@ -55,7 +55,8 @@ describe("formatHtml", () => {
 
   it("draws a numbered marker for each finding", () => {
     const html = formatHtml([result]);
-    expect(html).toContain('class="marker warn" href="#f1"');
+    // The box is at (10, 20), so its number badge flips to the right and below.
+    expect(html).toContain('class="marker warn edge-x edge-y" href="#f1"');
     expect(html).toContain('id="f1"');
   });
 

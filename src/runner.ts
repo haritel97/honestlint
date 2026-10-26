@@ -20,7 +20,14 @@ export function selectRules(ids?: string[]): Rule[] {
 
 /** Locate each finding's element and take a full-page screenshot to draw them on. */
 async function capture(page: Page, findings: Finding[]): Promise<Screenshot> {
+  // Grow the viewport to the whole page instead of using a stitched full-page
+  // screenshot: otherwise position:fixed elements (cookie banners, chat
+  // widgets) are drawn over the first screen and hide what is underneath.
   await page.evaluate(() => window.scrollTo(0, 0));
+  const pageHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+  const viewportHeight = Math.min(pageHeight, MAX_SCREENSHOT_HEIGHT);
+  await page.setViewportSize({ width: VIEWPORT.width, height: viewportHeight });
+
   const selectors = findings.map((f) => f.selector ?? null);
   const { boxes, width, height } = await page.evaluate((sels) => {
     const boxes = sels.map((sel) => {
@@ -38,11 +45,11 @@ async function capture(page: Page, findings: Finding[]): Promise<Screenshot> {
     if (box) findings[i].box = box;
   });
 
-  const clippedHeight = Math.min(height, MAX_SCREENSHOT_HEIGHT);
+  // Pages with 100vh sections can grow after the resize; stay within the viewport.
+  const clippedHeight = Math.min(height, viewportHeight);
   const image = await page.screenshot({
     type: "jpeg",
     quality: 80,
-    fullPage: true,
     clip: { x: 0, y: 0, width, height: clippedHeight },
   });
   return { data: image.toString("base64"), width, height: clippedHeight };

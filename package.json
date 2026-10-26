@@ -23,7 +23,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "readme-image": "node scripts/readme-image.mjs"
   },
   "keywords": [
     "dark-patterns",

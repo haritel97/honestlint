@@ -9,24 +9,33 @@
 
 Think ESLint, but for the honesty of your interface.
 
-```text
-$ npx honestlint http://localhost:3000/checkout
+![honestlint report for the ShadyShop demo store: a screenshot with four dark patterns outlined and numbered, next to the list of findings](https://raw.githubusercontent.com/haritel97/honestlint/main/docs/report.png)
 
-http://localhost:3000/checkout
-  error  Consent checkbox is pre-checked. Users must opt in themselves.  pre-checked-consent
-         "Send me offers from our partners"
-         #offers
-  warn   Accept button is 22.5x larger than the reject option.  cookie-banner-asymmetry
-         "Accept all / Reject"
-         #cookie-banner > a
-  error  Countdown reset from 14:54 to 15:00 after a reload.  fake-countdown
-         "15:00"
-         #timer
+## Try it in 30 seconds
 
-✖ 3 problem(s) (2 error(s), 1 warning(s))
+[**ShadyShop**](https://honestlint-shadyshop.vercel.app) is a fake store we built to be as shady as possible. Point honestlint at it:
+
+```bash
+npx playwright install chromium   # once
+npx honestlint https://honestlint-shadyshop.vercel.app --report
 ```
 
-> **Status:** early prototype (v0.1). Rules are heuristic, so expect some false positives and misses. Feedback and new rules are very welcome.
+```text
+https://honestlint-shadyshop.vercel.app
+  error  Consent checkbox is pre-checked. Users must opt in themselves.  pre-checked-consent
+         "Email me exclusive offers and share my details with trusted partners"
+  warn   Accept button is 14.8x larger than the reject option.  cookie-banner-asymmetry
+  warn   Opt-out text shames the user for declining.  confirmshaming
+         "No thanks, I'd rather pay full price"
+  error  Countdown reset from 09:58 to 09:59 after a reload.  fake-countdown
+
+✖ 4 problem(s) (2 error(s), 2 warning(s))
+Report written to honestlint-report.html
+```
+
+ShadyShop also hides a few patterns honestlint can't catch yet (fake scarcity, a pre-added protection plan, a "cancel by phone" subscription). Spotting them is a good first contribution.
+
+> **Status:** early (v0.2). Rules are heuristic, so expect some false positives and misses. Feedback and new rules are very welcome.
 
 ## Why
 

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ShadyShop: a fake store full of dark patterns (honestlint demo)</title>
+<meta name="description" content="A deliberately deceptive demo store for testing honestlint, the dark pattern linter. Nothing here is for sale.">
+<style>
+  :root {
+    --ink: #1a1a2e; --muted: #6b6b80; --line: #e8e6ef; --bg: #faf9fc; --brand: #ff4d6d;
+    --brand-dark: #d6284a; --sale: #ffe8ec; --green: #12b76a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink); background: var(--bg); padding-bottom: 120px; }
+  a { color: inherit; }
+  .demo-bar { background: #1a1a2e; color: #fff; font-size: 14px; text-align: center; padding: 8px 16px; }
+  .demo-bar a { color: #ffd166; }
+  header { background: #fff; border-bottom: 1px solid var(--line); }
+  .nav { max-width: 1120px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; gap: 24px; }
+  .logo { font-weight: 800; font-size: 22px; letter-spacing: -0.03em; text-decoration: none; }
+  .logo span { color: var(--brand); }
+  .search { flex: 1; max-width: 420px; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px;
+    color: var(--muted); font-size: 14px; background: var(--bg); }
+  .nav-links { display: flex; gap: 20px; font-size: 14px; margin-left: auto; }
+  .nav-links a { text-decoration: none; }
+  .cart { font-weight: 600; }
+  main { max-width: 1120px; margin: 0 auto; padding: 24px; }
+  .crumbs { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .product { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: start; }
+  .gallery { background: linear-gradient(145deg, #ffe3ea, #e7e3ff); border-radius: 24px; aspect-ratio: 1;
+    display: grid; place-items: center; position: relative; }
+  .gallery svg { width: 62%; }
+  .badge { position: absolute; top: 20px; left: 20px; background: var(--brand); color: #fff; font-weight: 800;
+    padding: 6px 14px; border-radius: 999px; font-size: 14px; }
+  h1 { font-size: 32px; line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 8px; }
+  .rating { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .rating b { color: #f5a524; letter-spacing: 2px; }
+  .price { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+  .price .now { font-size: 36px; font-weight: 800; color: var(--brand-dark); }
+  .price .was { color: var(--muted); text-decoration: line-through; }
+  .price .off { background: var(--sale); color: var(--brand-dark); font-weight: 700; font-size: 13px;
+    padding: 2px 8px; border-radius: 6px; }
+  .urgency { background: #1a1a2e; color: #fff; border-radius: 14px; padding: 14px 18px; display: flex;
+    align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .urgency small { display: block; color: #b9b9cc; font-size: 12px; }
+  #countdown { font: 800 28px/1 ui-monospace, Menlo, Consolas, monospace; color: #ffd166; }
+  .stock { color: var(--brand-dark); font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .viewers { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+  .swatches { display: flex; gap: 10px; margin-bottom: 20px; }
+  .swatch { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+  .swatch.active { box-shadow: 0 0 0 2px var(--ink); }
+  .options { border: 1px solid var(--line); background: #fff; border-radius: 14px; padding: 6px 16px; margin-bottom: 16px; }
+  .options label { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; font-size: 14px; cursor: pointer; }
+  .options label + label { border-top: 1px solid var(--line); }
+  .options input { margin-top: 3px; accent-color: var(--brand); width: 16px; height: 16px; flex: none; }
+  .add { width: 100%; border: 0; border-radius: 14px; background: var(--brand); color: #fff; font-size: 18px;
+    font-weight: 700; padding: 16px; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 77, 109, .35); }
+  .add:hover { background: var(--brand-dark); }
+  .ship { text-align: center; color: var(--muted); font-size: 13px; margin-top: 10px; }
+  .club { margin-top: 40px; display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: center;
+    background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 24px 28px; }
+  .club .icon { font-size: 40px; }
+  .club h2 { margin: 0 0 4px; font-size: 20px; }
+  .club p { margin: 0; color: var(--muted); font-size: 14px; }
+  .club-actions { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .join { border: 0; border-radius: 12px; background: var(--ink); color: #fff; font-weight: 700; padding: 12px 28px; cursor: pointer; }
+  .decline { font-size: 12px; color: var(--muted); }
+  footer { max-width: 1120px; margin: 40px auto 0; padding: 24px; color: var(--muted); font-size: 13px;
+    border-top: 1px solid var(--line); }
+  .cookie { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid var(--line);
+    box-shadow: 0 -8px 30px rgba(26, 26, 46, .12); z-index: 10; }
+  .cookie-inner { max-width: 1120px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; gap: 24px; }
+  .cookie p { margin: 0; font-size: 14px; flex: 1; }
+  .cookie-actions { display: flex; align-items: center; gap: 16px; }
+  .accept { border: 0; border-radius: 12px; background: var(--green); color: #fff; font-size: 16px; font-weight: 700;
+    padding: 14px 40px; cursor: pointer; }
+  .reject { font-size: 11px; color: #b0b0c0; }
+  @media (max-width: 860px) {
+    .nav-links a:not(.cart), .search { display: none; }
+    .product { grid-template-columns: 1fr; gap: 24px; }
+    .club { grid-template-columns: 1fr; text-align: center; }
+    .cookie-inner { flex-direction: column; align-items: stretch; text-align: center; gap: 12px; }
+    .cookie-actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+  <div class="demo-bar">
+    🧪 This is a <strong>fake demo store</strong>. Every dark pattern here is intentional and nothing is for sale.
+    Built to test <a href="https://github.com/haritel97/honestlint">honestlint</a>, the dark pattern linter.
+  </div>
+
+  <header>
+    <nav class="nav">
+      <a class="logo" href="#">Shady<span>Shop</span></a>
+      <div class="search">Search 10,000+ "deals"…</div>
+      <div class="nav-links">
+        <a href="#">New</a><a href="#">Audio</a><a href="#">Sale</a><a class="cart" href="#">🛒 Cart (1)</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="crumbs">Home / Audio / Headphones</div>
+
+    <section class="product">
+      <div class="gallery">
+        <span class="badge">-50% TODAY ONLY</span>
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <path d="M40 110 V95 a60 60 0 0 1 120 0 V110" fill="none" stroke="#1a1a2e" stroke-width="12" stroke-linecap="round"/>
+          <rect x="22" y="100" width="40" height="66" rx="18" fill="#ff4d6d"/>
+          <rect x="138" y="100" width="40" height="66" rx="18" fill="#ff4d6d"/>
+          <rect x="34" y="112" width="16" height="42" rx="8" fill="#fff" opacity=".35"/>
+          <rect x="150" y="112" width="16" height="42" rx="8" fill="#fff" opacity=".35"/>
+        </svg>
+      </div>
+
+      <div>
+        <h1>Aurora Pro Wireless Headphones</h1>
+        <div class="rating"><b>★★★★★</b> 4.9 · 12,847 reviews</div>
+
+        <div class="price">
+          <span class="now">$149</span><span class="was">$299</span><span class="off">SAVE $150</span>
+        </div>
+
+        <div class="urgency">
+          <div>⚡ Flash sale ends in<small>Price goes back up when the timer hits zero</small></div>
+          <span id="countdown">09:59</span>
+        </div>
+        <div class="stock">🔥 Only 2 left in stock!</div>
+        <div class="viewers">👀 37 people are looking at this right now</div>
+
+        <div class="swatches">
+          <span class="swatch active" style="background:#ff4d6d"></span>
+          <span class="swatch" style="background:#1a1a2e"></span>
+          <span class="swatch" style="background:#e8e6ef"></span>
+        </div>
+
+        <form class="options" onsubmit="return false">
+          <label><input type="checkbox" id="protection" checked> Add 2-year ShadyCare protection plan (+$29.99)</label>
+          <label><input type="checkbox" id="marketing" checked> Email me exclusive offers and share my details with trusted partners</label>
+        </form>
+
+        <button class="add" type="button">Add to cart</button>
+        <div class="ship">Free shipping on orders over $500</div>
+      </div>
+    </section>
+
+    <section class="club">
+      <div class="icon">💎</div>
+      <div>
+        <h2>Join ShadyClub and save an extra 20%</h2>
+        <p>Members get early access to deals. Only $19.99/month after a 7-day free trial. Cancel by phone, weekdays 9:00–9:15.</p>
+      </div>
+      <div class="club-actions">
+        <button class="join" type="button">Join ShadyClub</button>
+        <a class="decline" href="#">No thanks, I'd rather pay full price</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    ShadyShop is a fictional store for demonstrating <a href="https://github.com/haritel97/honestlint">honestlint</a>.
+    Try it: <code>npx honestlint https://honestlint-shadyshop.vercel.app --report</code>
+  </footer>
+
+  <div class="cookie" role="dialog" aria-label="Cookie consent">
+    <div class="cookie-inner">
+      <p>🍪 We use cookies to give you the best shopping experience, personalise ads and share data with 847 partners.</p>
+      <div class="cookie-actions">
+        <button class="accept" type="button">Accept all</button>
+        <a class="reject" href="#">Reject</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Fake urgency: the "flash sale" restarts at 10 minutes on every visit.
+    let remaining = 10 * 60 - 1;
+    const timer = document.getElementById("countdown");
+    setInterval(() => {
+      remaining = remaining > 0 ? remaining - 1 : 10 * 60 - 1;
+      const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+      const s = String(remaining % 60).padStart(2, "0");
+      timer.textContent = m + ":" + s;
+    }, 1000);
+  </script>
+</body>
+</html>

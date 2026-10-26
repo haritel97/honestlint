@@ -18,6 +18,10 @@ npm test
 4. Add the pattern to `test/fixtures/deceptive.html`, an honest version to `test/fixtures/honest.html`, and a test in `test/rules.test.ts`.
 5. Add a row to the rules table in `README.md`.
 
+## The ShadyShop demo
+
+`demo/shadyshop/index.html` is the public demo store at https://honestlint-shadyshop.vercel.app, and `test/shadyshop.test.ts` runs every rule against it. When you add a rule, consider adding its pattern to ShadyShop too. After changing the report UI, regenerate the README image with `npm run build && npm run readme-image`.
+
 ## Guidelines
 
 - **Prefer false negatives over false positives.** A linter that cries wolf gets turned off.
