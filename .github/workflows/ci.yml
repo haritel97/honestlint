@@ -17,8 +17,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-        # This step has hung on apt before.
+      # ubuntu-latest already ships Chromium's system libraries. Skipping
+      # --with-deps avoids apt, whose mirrors have been slow enough to stall CI.
+      - run: npx playwright install chromium
         timeout-minutes: 5
       - run: npm run typecheck
       - run: npm run build
