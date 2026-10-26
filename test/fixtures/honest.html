@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Honest checkout</title>
+  <style>
+    .choice { padding: 10px 24px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div id="cookie-banner">
+    <p>We use cookies to improve your experience.</p>
+    <button class="choice">Accept all</button>
+    <button class="choice">Reject all</button>
+  </div>
+
+  <h1>Sale ends in <span id="timer">15:00</span></h1>
+
+  <form>
+    <label><input type="checkbox" id="offers"> Send me offers from our partners</label>
+    <label><input type="checkbox" id="remember" checked> Remember me on this device</label>
+    <button type="submit">Buy now</button>
+  </form>
+
+  <div id="popup">
+    <p>Get 20% off your first order!</p>
+    <button>Yes, sign me up</button>
+    <a href="#">No thanks</a>
+  </div>
+
+  <script>
+    // A real deadline: stored once, so reloading does not reset it.
+    let deadline = Number(localStorage.getItem("deadline"));
+    if (!deadline) {
+      deadline = Date.now() + 15 * 60 * 1000;
+      localStorage.setItem("deadline", String(deadline));
+    }
+    const el = document.getElementById("timer");
+    const render = () => {
+      const remaining = Math.max(0, Math.floor((deadline - Date.now()) / 1000));
+      const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+      const s = String(remaining % 60).padStart(2, "0");
+      el.textContent = m + ":" + s;
+    };
+    render();
+    setInterval(render, 250);
+  </script>
+</body>
+</html>

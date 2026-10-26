@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Deceptive checkout</title>
+  <style>
+    .accept { padding: 20px 60px; font-size: 20px; background: #16a34a; color: #fff; border: 0; }
+    .reject { padding: 2px 4px; font-size: 11px; background: none; border: 0; color: #999; }
+  </style>
+</head>
+<body>
+  <div id="cookie-banner">
+    <p>We use cookies to improve your experience.</p>
+    <button class="accept">Accept all</button>
+    <a href="#" class="reject">Reject</a>
+  </div>
+
+  <h1>Flash sale ends in <span id="timer">15:00</span></h1>
+
+  <form>
+    <label><input type="checkbox" id="offers" checked> Send me offers from our partners</label>
+    <button type="submit">Buy now</button>
+  </form>
+
+  <div id="popup">
+    <p>Get 20% off your first order!</p>
+    <button>Yes, sign me up</button>
+    <a href="#">No thanks, I don't like saving money</a>
+  </div>
+
+  <script>
+    // Starts at 15:00 on every load: the classic fake urgency timer.
+    let remaining = 15 * 60;
+    const el = document.getElementById("timer");
+    setInterval(() => {
+      remaining--;
+      const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+      const s = String(remaining % 60).padStart(2, "0");
+      el.textContent = m + ":" + s;
+    }, 250);
+  </script>
+</body>
+</html>
