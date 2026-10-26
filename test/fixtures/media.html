@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Times that are not sales timers</title></head>
+<body>
+  <!-- A news video player: its remaining time counts down and restarts on every
+       visit, but it is not a fake sales timer. The headline even says "deal". -->
+  <article>
+    <h2>Leaders reach trade deal after late-night talks</h2>
+    <div class="vp">
+      <video muted width="320" height="180"></video>
+      <div class="controls"><span class="remaining">1:27</span></div>
+    </div>
+  </article>
+
+  <!-- A stopwatch-style timer with no sales wording around it. -->
+  <section>
+    <h2>Workout</h2>
+    <p>Rest: <span id="rest">0:45</span></p>
+  </section>
+
+  <script>
+    const pad = (n) => String(n).padStart(2, "0");
+    let video = 87;
+    let rest = 45;
+    setInterval(() => {
+      video--;
+      rest--;
+      document.querySelector(".remaining").textContent = Math.floor(video / 60) + ":" + pad(video % 60);
+      document.getElementById("rest").textContent = Math.floor(rest / 60) + ":" + pad(rest % 60);
+    }, 250);
+  </script>
+</body>
+</html>

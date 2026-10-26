@@ -1,4 +1,5 @@
 import type { Rule } from "../types.js";
+import { withFrame } from "./util.js";
 
 /** Label text that suggests the checkbox grants consent rather than, say, "remember me". */
 const CONSENT_PATTERN =
@@ -8,11 +9,12 @@ export const preCheckedConsent: Rule = {
   id: "pre-checked-consent",
   description: "Consent checkboxes (marketing, partners, newsletters) must not be ticked by default.",
   severity: "error",
-  async check({ page }) {
-    const hits = await page.evaluate((source) => {
+  async check({ inFrames }) {
+    const hits = await inFrames((source) => {
       const pattern = new RegExp(source, "i");
       const h = window.__honestlint;
-      return Array.from(document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'))
+      return h
+        .all<HTMLInputElement>('input[type="checkbox"]')
         .filter((box) => box.checked && h.isVisible(box))
         .map((box) => {
           const label =
@@ -21,16 +23,18 @@ export const preCheckedConsent: Rule = {
               .join(" ") ||
             box.getAttribute("aria-label") ||
             h.text(box.parentElement ?? box);
-          return { selector: h.cssPath(box), label };
+          return { box, label };
         })
-        .filter((hit) => pattern.test(hit.label));
+        .filter((hit) => pattern.test(hit.label))
+        .map(({ box, label }) => ({ selector: h.cssPath(box), ref: h.mark(box), label }));
     }, CONSENT_PATTERN.source);
 
     return hits.map((hit) => ({
       ruleId: this.id,
       severity: this.severity,
       message: "Consent checkbox is pre-checked. Users must opt in themselves.",
-      selector: hit.selector,
+      selector: withFrame(hit),
+      ref: hit.ref,
       snippet: hit.label.slice(0, 120),
     }));
   },

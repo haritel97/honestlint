@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Late banner</title></head>
+<body>
+  <div id="app">Loading…</div>
+  <script>
+    // Like a single-page app, the page renders after the load event, and the
+    // cookie banner appears last.
+    setTimeout(() => {
+      document.getElementById("app").innerHTML = "<h1>Welcome</h1>";
+    }, 200);
+    setTimeout(() => {
+      const banner = document.createElement("div");
+      banner.innerHTML = '<p>This site uses cookies.</p><button>Accept all</button>';
+      document.body.append(banner);
+    }, 600);
+  </script>
+</body>
+</html>

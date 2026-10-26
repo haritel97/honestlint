@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Consent banner in shadow DOM</title></head>
+<body>
+  <h1>Shop</h1>
+  <!-- Like many consent platforms, the banner lives inside an open shadow root. -->
+  <consent-banner></consent-banner>
+  <script>
+    customElements.define("consent-banner", class extends HTMLElement {
+      connectedCallback() {
+        const root = this.attachShadow({ mode: "open" });
+        root.innerHTML = `
+          <style>
+            .accept { padding: 20px 60px; font-size: 20px; }
+            .reject { padding: 2px; font-size: 10px; }
+          </style>
+          <div class="banner">
+            <p>We use cookies to improve your experience.</p>
+            <label><input type="checkbox" id="ads" checked> Personalised ads from our partners</label>
+            <button class="accept">Accept all</button>
+            <a href="#" class="reject">Reject</a>
+          </div>`;
+      }
+    });
+  </script>
+</body>
+</html>

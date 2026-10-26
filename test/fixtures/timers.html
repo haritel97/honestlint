@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Tricky timers</title></head>
+<body>
+  <!-- Digits split across elements, restarting on every visit. -->
+  <p>Deal ends in <span id="split"><span class="m">09</span>:<span class="s">59</span></span></p>
+
+  <!-- Survives a reload (sessionStorage) but restarts in every new tab. -->
+  <p>Offer reserved for <span id="session">05:00</span></p>
+
+  <script>
+    const pad = (n) => String(n).padStart(2, "0");
+
+    let split = 10 * 60 - 1;
+    setInterval(() => {
+      split--;
+      document.querySelector("#split .m").textContent = pad(Math.floor(split / 60));
+      document.querySelector("#split .s").textContent = pad(split % 60);
+    }, 250);
+
+    let ends = Number(sessionStorage.getItem("ends"));
+    if (!ends) {
+      ends = Date.now() + 5 * 60 * 1000;
+      sessionStorage.setItem("ends", String(ends));
+    }
+    const session = document.getElementById("session");
+    const render = () => {
+      const left = Math.max(0, Math.floor((ends - Date.now()) / 1000));
+      session.textContent = pad(Math.floor(left / 60)) + ":" + pad(left % 60);
+    };
+    render();
+    setInterval(render, 250);
+  </script>
+</body>
+</html>

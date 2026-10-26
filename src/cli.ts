@@ -21,6 +21,7 @@ Options:
   --report              Also write an HTML report with annotated screenshots
   --out <file>          Where to write the report (default honestlint-report.html)
   --timeout <ms>        Navigation timeout (default 30000)
+  --wait <ms>           Extra wait after the page settles, for late banners (default 1000)
   --headed              Show the browser window
   --list-rules          List the built-in rules
   -h, --help            Show this help
@@ -29,6 +30,8 @@ Examples:
   honestlint http://localhost:3000/checkout
   honestlint https://staging.example.com --rule cookie-banner-asymmetry --json
   honestlint http://localhost:3000 --report --out reports/home.html
+
+Exit codes: 0 clean, 1 findings at or above --fail-on, 2 usage error or a page could not be linted.
 `;
 
 async function main(): Promise<number> {
@@ -41,6 +44,7 @@ async function main(): Promise<number> {
       report: { type: "boolean", default: false },
       out: { type: "string", default: "honestlint-report.html" },
       timeout: { type: "string" },
+      wait: { type: "string" },
       headed: { type: "boolean", default: false },
       "list-rules": { type: "boolean", default: false },
       help: { type: "boolean", short: "h", default: false },
@@ -69,6 +73,7 @@ async function main(): Promise<number> {
   const results = await lint(positionals, {
     rules: values.rule,
     timeout: values.timeout ? Number(values.timeout) : undefined,
+    wait: values.wait ? Number(values.wait) : undefined,
     headless: !values.headed,
     screenshot: values.report,
   });
@@ -81,8 +86,12 @@ async function main(): Promise<number> {
     console.error(`Report written to ${pathToFileURL(out).href}`);
   }
 
+  // `ref` is internal bookkeeping for the screenshot; keep it out of the output.
+  for (const r of results) for (const f of r.findings) delete f.ref;
   console.log(values.json ? formatJson(results) : formatPretty(results));
 
+  // A page we could not check is not a pass.
+  if (results.some((r) => r.error)) return 2;
   const failing = results.some((r) =>
     r.findings.some((f) => f.severity === "error" || (failOn === "warn" && f.severity === "warn")),
   );

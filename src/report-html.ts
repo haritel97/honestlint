@@ -55,6 +55,15 @@ function renderFinding(f: Finding, n: number, onScreenshot: boolean): string {
 }
 
 function renderPage(result: LintResult, offset: number): string {
+  if (result.error) {
+    return `<section class="page">
+  <header class="page-head">
+    <h2>${escapeHtml(result.url)}</h2>
+    <div class="chips"><span class="chip error">Could not lint</span></div>
+  </header>
+  <p class="empty">${escapeHtml(result.error)}</p>
+</section>`;
+  }
   const { errors, warnings } = countBySeverity(result.findings);
   const shot = result.screenshot;
   const clean = result.findings.length === 0;

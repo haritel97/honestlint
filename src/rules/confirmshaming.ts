@@ -1,4 +1,5 @@
 import type { Rule } from "../types.js";
+import { CONTROLS, withFrame } from "./util.js";
 
 /** Opt-out wording that guilt-trips the user ("No thanks, I hate saving money"). */
 const SHAMING_PATTERNS = [
@@ -18,25 +19,28 @@ export const confirmshaming: Rule = {
   id: "confirmshaming",
   description: "Opt-out choices must not use wording that shames or guilt-trips the user.",
   severity: "warn",
-  async check({ page }) {
-    const controls = await page.evaluate(() => {
-      const h = window.__honestlint;
-      return Array.from(
-        document.querySelectorAll<HTMLElement>('button, a, [role="button"], input[type="button"], input[type="submit"], label'),
-      )
-        .filter((el) => h.isVisible(el))
-        .map((el) => ({ selector: h.cssPath(el), text: h.text(el) }))
-        .filter((c) => c.text.length > 0 && c.text.length < 160);
-    });
+  async check({ inFrames }) {
+    const hits = await inFrames(
+      ({ selector, sources }) => {
+        const h = window.__honestlint;
+        const patterns = sources.map((s) => new RegExp(s, "i"));
+        return h
+          .all(selector + ", label")
+          .filter((el) => h.isVisible(el))
+          .map((el) => ({ el, text: h.text(el) }))
+          .filter(({ text }) => text.length > 0 && text.length < 160 && patterns.some((p) => p.test(text)))
+          .map(({ el, text }) => ({ selector: h.cssPath(el), ref: h.mark(el), text }));
+      },
+      { selector: CONTROLS, sources: SHAMING_PATTERNS.map((p) => p.source) },
+    );
 
-    return controls
-      .filter((c) => matchesConfirmshaming(c.text))
-      .map((c) => ({
-        ruleId: this.id,
-        severity: this.severity,
-        message: "Opt-out text shames the user for declining.",
-        selector: c.selector,
-        snippet: c.text,
-      }));
+    return hits.map((hit) => ({
+      ruleId: this.id,
+      severity: this.severity,
+      message: "Opt-out text shames the user for declining.",
+      selector: withFrame(hit),
+      ref: hit.ref,
+      snippet: hit.text,
+    }));
   },
 };

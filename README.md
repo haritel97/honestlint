@@ -27,7 +27,7 @@ https://honestlint-shadyshop.vercel.app
   warn   Accept button is 14.8x larger than the reject option.  cookie-banner-asymmetry
   warn   Opt-out text shames the user for declining.  confirmshaming
          "No thanks, I'd rather pay full price"
-  error  Countdown reset from 09:58 to 09:59 after a reload.  fake-countdown
+  error  Countdown reset from 09:58 to 09:59 when the page was opened again.  fake-countdown
 
 ✖ 4 problem(s) (2 error(s), 2 warning(s))
 Report written to honestlint-report.html
@@ -78,10 +78,11 @@ npx honestlint http://localhost:3000 --report
 | `--report` | Also write an HTML report with annotated screenshots |
 | `--out <file>` | Where to write the report (default `honestlint-report.html`) |
 | `--timeout <ms>` | Navigation timeout (default 30000) |
+| `--wait <ms>` | Extra wait after the page settles, for banners that appear late (default 1000) |
 | `--headed` | Show the browser window |
 | `--list-rules` | List the built-in rules |
 
-Exit codes: `0` clean, `1` findings at or above `--fail-on`, `2` usage or runtime error.
+Exit codes: `0` clean, `1` findings at or above `--fail-on`, `2` usage error or a page that could not be linted. A page that fails to load (timeout, DNS, crash) is reported on its own and does not stop the other pages.
 
 ### Programmatic API
 
@@ -99,7 +100,15 @@ console.log(formatPretty(results));
 | `pre-checked-consent` | error | Marketing, newsletter or partner-sharing checkboxes that are ticked by default |
 | `cookie-banner-asymmetry` | warn | Cookie banners with no reject option, or a reject option far smaller than accept |
 | `confirmshaming` | warn | Opt-out wording that guilt-trips the user ("No thanks, I don't like saving money") |
-| `fake-countdown` | error | Urgency timers that reset when the page is reloaded |
+| `fake-countdown` | error | Urgency timers that restart when the page is opened again in a new tab |
+
+### How pages are inspected
+
+- honestlint waits for the network to go quiet after load, then `--wait` ms more, so single-page apps and late cookie banners have time to render.
+- Rules look inside **open shadow roots** and **iframes** (including third-party ones), where most consent platforms render their banners. Selectors show these boundaries as `>>>` (shadow root) and `[iframe …]`.
+- Timers are watched for a moment to confirm they are counting down, then the page is opened again in a fresh tab. A timer that jumps back up is fake, even if it only persists per session. Times inside video and audio players, and times with no sales wording nearby ("ends", "offer", "tamat", "endet"…), are ignored.
+- Cookie banners are recognised in English, German, French, Spanish, Italian, Dutch, Portuguese and Malay.
+- Many large sites serve automated browsers a block page or CAPTCHA. honestlint reports these pages as **could not lint** rather than "clean", and does not try to get around bot protection. It works best on your own site: run it against a local, preview or staging build.
 
 ## Roadmap
 

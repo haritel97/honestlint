@@ -12,6 +12,11 @@ export function formatPretty(results: LintResult[]): string {
   let errors = 0;
   let warnings = 0;
 
+  const failed = results.filter((r) => r.error);
+  for (const { url, error } of failed) {
+    lines.push("", bold(url), `  ${red("failed")} Could not lint this page: ${error}`);
+  }
+
   for (const { url, findings } of results) {
     if (findings.length === 0) continue;
     lines.push("", bold(url));
@@ -26,11 +31,13 @@ export function formatPretty(results: LintResult[]): string {
   }
 
   const total = errors + warnings;
+  const linted = results.length - failed.length;
   if (total === 0) {
-    lines.push(`✔ No dark patterns found in ${results.length} page(s).`);
+    lines.push(`${failed.length ? "" : "✔ "}No dark patterns found in ${linted} page(s).`);
   } else {
     lines.push("", bold(`✖ ${total} problem(s) (${errors} error(s), ${warnings} warning(s))`));
   }
+  if (failed.length) lines.push(red(`✖ ${failed.length} page(s) could not be linted.`));
   return lines.join("\n");
 }
 
