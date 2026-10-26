@@ -52,13 +52,22 @@ npx honestlint http://localhost:3000 --rule fake-countdown --rule confirmshaming
 
 # Fail CI on warnings too, and get machine-readable output
 npx honestlint http://localhost:3000 --fail-on warn --json
+
+# Write an HTML report with annotated screenshots
+npx honestlint http://localhost:3000 --report
 ```
+
+### HTML report
+
+`--report` writes a single self-contained HTML file (default `honestlint-report.html`, change it with `--out`). Each page gets a full-page screenshot with every problem outlined and numbered, next to the list of findings. Hover a finding to highlight it on the screenshot, or click a marker to jump to its finding. The file has no external dependencies, so you can attach it to a PR, upload it as a CI artifact, or send it to a designer.
 
 | Option | Description |
 | --- | --- |
 | `--rule <id>` | Only run this rule (repeatable) |
 | `--fail-on <level>` | Exit non-zero on `error` (default) or `warn` |
 | `--json` | Print results as JSON |
+| `--report` | Also write an HTML report with annotated screenshots |
+| `--out <file>` | Where to write the report (default `honestlint-report.html`) |
 | `--timeout <ms>` | Navigation timeout (default 30000) |
 | `--headed` | Show the browser window |
 | `--list-rules` | List the built-in rules |
