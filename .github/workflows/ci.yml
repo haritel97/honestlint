@@ -8,6 +8,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # A normal run takes under a minute; fail fast if something hangs.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -16,6 +18,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+        # This step has hung on apt before.
+        timeout-minutes: 5
       - run: npm run typecheck
       - run: npm run build
       - run: npm test
